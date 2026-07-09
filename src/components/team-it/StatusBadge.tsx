@@ -1,20 +1,21 @@
 import { cn } from "@/lib/utils";
-import type { Priority, TaskStatus } from "@/lib/team-it/data";
-import { priorityLabels, statusLabels } from "@/lib/team-it/data";
+import { TaskPriority, TaskStatus } from "@/types/task";
+import { priorityLabels, statusLabels } from "@/constants/task";
 
 const statusClasses: Record<TaskStatus, string> = {
-  todo: "bg-muted text-muted-foreground",
-  in_progress: "bg-info/10 text-info",
-  blocked: "bg-destructive/10 text-destructive",
-  review: "bg-warning/15 text-warning-foreground dark:text-warning",
-  done: "bg-success/10 text-success",
+  [TaskStatus.TODO]: "bg-muted text-muted-foreground",
+  [TaskStatus.IN_PROGRESS]: "bg-info/10 text-info",
+  [TaskStatus.BLOCKED]: "bg-destructive/10 text-destructive",
+  [TaskStatus.UNDER_REVIEW]: "bg-warning/15 text-warning-foreground dark:text-warning",
+  [TaskStatus.APPROVED]: "bg-info/10 text-info",
+  [TaskStatus.DONE]: "bg-success/10 text-success",
 };
 
-const priorityClasses: Record<Priority, string> = {
-  low: "bg-muted text-muted-foreground",
-  medium: "bg-info/10 text-info",
-  high: "bg-warning/15 text-warning-foreground dark:text-warning",
-  urgent: "bg-destructive/10 text-destructive",
+const priorityClasses: Record<TaskPriority, string> = {
+  [TaskPriority.LOW]: "bg-muted text-muted-foreground",
+  [TaskPriority.MEDIUM]: "bg-info/10 text-info",
+  [TaskPriority.HIGH]: "bg-warning/15 text-warning-foreground dark:text-warning",
+  [TaskPriority.CRITICAL]: "bg-destructive/10 text-destructive",
 };
 
 export function StatusBadge({ status, className }: { status: TaskStatus; className?: string }) {
@@ -32,7 +33,7 @@ export function StatusBadge({ status, className }: { status: TaskStatus; classNa
   );
 }
 
-export function PriorityBadge({ priority, className }: { priority: Priority; className?: string }) {
+export function PriorityBadge({ priority, className }: { priority: TaskPriority; className?: string }) {
   return (
     <span
       className={cn(

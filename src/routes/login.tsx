@@ -1,11 +1,18 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { login } from "@/services/auth.service";
 
 export const Route = createFileRoute("/login")({
+  // Accepts the ?redirect= param that routes/_app.tsx attaches when it
+  // bounces an unauthenticated visitor here, so we can send them back.
+  validateSearch: (search: Record<string, unknown>) => ({
+    redirect: typeof search.redirect === "string" ? search.redirect : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Sign in — Team-it" },
@@ -17,8 +24,30 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("sarah@team-it.co");
-  const [password, setPassword] = useState("••••••••");
+  const queryClient = useQueryClient();
+  const { redirect } = Route.useSearch();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setSubmitting(true);
+    try {
+      const user = await login(email, password);
+      // Seed the cache so routes/_app.tsx's ensureQueryData resolves
+      // instantly on the very next navigation, instead of refetching.
+      queryClient.setQueryData(["currentUser"], user);
+      navigate({ to: redirect ?? "/dashboard" });
+    } catch {
+      setError("That email or password didn't work. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
   return (
     <div className="grid min-h-screen w-full bg-background lg:grid-cols-2">
@@ -39,19 +68,19 @@ function LoginPage() {
             </p>
           </div>
 
-          <form
-            className="space-y-4"
-            onSubmit={(e) => {
-              e.preventDefault();
-              navigate({ to: "/dashboard" });
-            }}
-          >
+          <form className="space-y-4" onSubmit={handleSubmit}>
+            {error && (
+              <div className="rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+                {error}
+              </div>
+            )}
             <div className="space-y-1.5">
               <Label htmlFor="email">Work email</Label>
               <Input
                 id="email"
                 type="email"
                 autoComplete="email"
+                required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
@@ -67,6 +96,7 @@ function LoginPage() {
                 id="password"
                 type="password"
                 autoComplete="current-password"
+                required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
@@ -74,8 +104,8 @@ function LoginPage() {
             <label className="flex items-center gap-2 text-sm text-muted-foreground">
               <Checkbox defaultChecked /> Remember me for 30 days
             </label>
-            <Button type="submit" className="w-full">
-              Sign in
+            <Button type="submit" className="w-full" disabled={submitting}>
+              {submitting ? "Signing in…" : "Sign in"}
             </Button>
           </form>
 
