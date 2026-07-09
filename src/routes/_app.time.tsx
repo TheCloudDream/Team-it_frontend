@@ -1,10 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Pause, Play, Plus } from "lucide-react";
 import { PageContainer, PageHeader, Panel, StatCard } from "@/components/team-it/Page";
 import { Button } from "@/components/ui/button";
 import { BarChart } from "@/components/team-it/Charts";
-import { tasks, users } from "@/lib/team-it/data";
+import { getTasks } from "@/services/task.service";
+import { getUsers } from "@/services/user.service";
+import type { Task } from "@/types/task";
+import type { User } from "@/types/user";
 
 export const Route = createFileRoute("/_app/time")({
   head: () => ({ meta: [{ title: "Time tracking — Team-it" }] }),
@@ -13,8 +16,17 @@ export const Route = createFileRoute("/_app/time")({
 
 function TimePage() {
   const [running, setRunning] = useState(false);
-  const me = users.find((u) => u.name === "Priya Anand")!;
-  const myTasks = tasks.filter((t) => t.assigneeId === me.id);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
+
+  useEffect(() => {
+    getTasks().then(setTasks);
+    getUsers().then(setUsers);
+  }, []);
+
+  // For migration purposes, treat the first returned user as the active user session
+  const me = users[0];
+  const myTasks = me ? tasks.filter((t) => t.assigneeId === me.id) : [];
 
   const week = [
     { label: "Mon", value: 6.5 },
@@ -45,7 +57,7 @@ function TimePage() {
           </button>
           <div className="flex-1">
             <div className="text-xs uppercase tracking-wide text-muted-foreground">
-              {running ? "Timer running · ENG-414" : "Ready to start"}
+              {running ? "Timer running · Active Task" : "Ready to start"}
             </div>
             <div className="font-mono text-3xl font-semibold tabular-nums">
               {running ? "00:42:18" : "00:00:00"}
@@ -70,12 +82,15 @@ function TimePage() {
             {myTasks.slice(0, 5).map((t) => (
               <div key={t.id} className="flex items-center gap-3">
                 <span className="rounded bg-muted px-1.5 py-0.5 font-mono text-[10px] font-bold text-muted-foreground">
-                  {t.code}
+                  TASK-{t.id}
                 </span>
                 <span className="flex-1 truncate text-sm">{t.title}</span>
                 <span className="font-mono text-sm font-semibold tabular-nums">{t.actualHours}h</span>
               </div>
             ))}
+            {myTasks.length === 0 && (
+              <div className="text-xs text-muted-foreground py-2">No logged hours for current user.</div>
+            )}
           </div>
         </Panel>
       </div>

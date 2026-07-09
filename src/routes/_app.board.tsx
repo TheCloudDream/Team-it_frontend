@@ -1,12 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { Filter, Plus } from "lucide-react";
-import {
-  statusOrder,
-  statusLabels,
-  tasks,
-  users,
-  type TaskStatus,
-} from "@/lib/team-it/data";
+import { statusOrder, statusLabels } from "@/constants/task";
+import { getTasks } from "@/services/task.service";
+import { getUsers } from "@/services/user.service";
+import { TaskStatus } from "@/types/task";
+import type { Task } from "@/types/task";
+import type { User } from "@/types/user";
 import { PageContainer, PageHeader } from "@/components/team-it/Page";
 import { UserAvatar } from "@/components/team-it/Avatar";
 import { PriorityBadge } from "@/components/team-it/StatusBadge";
@@ -21,14 +21,23 @@ export const Route = createFileRoute("/_app/board")({
 });
 
 const columnAccent: Record<TaskStatus, string> = {
-  todo: "bg-muted-foreground/40",
-  in_progress: "bg-primary",
-  blocked: "bg-destructive",
-  review: "bg-warning",
-  done: "bg-success",
+  [TaskStatus.TODO]: "bg-muted-foreground/40",
+  [TaskStatus.IN_PROGRESS]: "bg-primary",
+  [TaskStatus.BLOCKED]: "bg-destructive",
+  [TaskStatus.UNDER_REVIEW]: "bg-warning",
+  [TaskStatus.APPROVED]: "bg-info",
+  [TaskStatus.DONE]: "bg-success",
 };
 
 function BoardPage() {
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
+
+  useEffect(() => {
+    getTasks().then(setTasks);
+    getUsers().then(setUsers);
+  }, []);
+
   return (
     <PageContainer className="max-w-none">
       <PageHeader
@@ -64,7 +73,7 @@ function BoardPage() {
 
               <div className="flex flex-1 flex-col gap-2">
                 {colTasks.map((t) => {
-                  const assignee = users.find((u) => u.id === t.assigneeId)!;
+                  const assignee = users.find((u) => u.id === t.assigneeId);
                   return (
                     <Link
                       key={t.id}
@@ -72,27 +81,33 @@ function BoardPage() {
                       params={{ id: t.id }}
                       className={cn(
                         "group cursor-grab rounded-xl border border-border bg-card p-3 shadow-[var(--shadow-elegant)] transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-pop)]",
-                        status === "blocked" && "border-l-2 border-l-destructive",
-                        status === "in_progress" && "border-l-2 border-l-primary",
+                        status === TaskStatus.BLOCKED && "border-l-2 border-l-destructive",
+                        status === TaskStatus.IN_PROGRESS && "border-l-2 border-l-primary",
                       )}
                     >
                       <div className="mb-2 flex items-center justify-between">
                         <span className="rounded bg-muted px-1.5 py-0.5 font-mono text-[9px] font-bold text-muted-foreground">
-                          {t.code}
+                          TASK-{t.id}
                         </span>
                         <PriorityBadge priority={t.priority} />
                       </div>
                       <p className="mb-3 text-sm font-medium leading-snug">{t.title}</p>
-                      {t.blockedReason && (
+                      
+                      {status === TaskStatus.BLOCKED && (
                         <p className="mb-3 rounded-md bg-destructive/10 px-2 py-1 text-[10px] text-destructive">
-                          {t.blockedReason}
+                          Task is currently blocked.
                         </p>
                       )}
+                      
                       <div className="flex items-center justify-between">
-                        <UserAvatar user={assignee} size="xs" />
+                        {assignee ? (
+                          <UserAvatar user={assignee} size="xs" />
+                        ) : (
+                          <span className="text-[10px] text-muted-foreground">Unassigned</span>
+                        )}
                         <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-                          <span>{t.comments} 💬</span>
-                          <span>Due {t.dueDate.slice(5)}</span>
+                          <span>0 💬</span>
+                          <span>Due {t.dueDate ? t.dueDate.slice(5) : "—"}</span>
                         </div>
                       </div>
                     </Link>

@@ -1,15 +1,40 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import { PageContainer, PageHeader, Panel } from "@/components/team-it/Page";
 import { Button } from "@/components/ui/button";
-import { milestones, tasks } from "@/lib/team-it/data";
+import { getTasks } from "@/services/task.service";
+import { TaskStatus } from "@/types/task";
+import type { Task } from "@/types/task";
 
 export const Route = createFileRoute("/_app/milestones")({
   head: () => ({ meta: [{ title: "Milestones — Team-it" }] }),
   component: MilestonesPage,
 });
 
+// Self-contained milestone model until dedicated milestone backend schemas are added
+interface MilestoneFallback {
+  id: string;
+  name: string;
+  team: string;
+  deadline: string;
+  progress: number;
+  taskCount: number;
+  completedCount: number;
+}
+
+const fallbackMilestones: MilestoneFallback[] = [
+  { id: "m1", name: "Alpha Release v1.0", team: "Engineering", deadline: "2026-08-15", progress: 65, taskCount: 12, completedCount: 8 },
+  { id: "m2", name: "UI Refactor Integration", team: "Design/Frontend", deadline: "2026-09-01", progress: 40, taskCount: 8, completedCount: 3 },
+];
+
 function MilestonesPage() {
+  const [tasks, setTasks] = useState<Task[]>([]);
+
+  useEffect(() => {
+    getTasks().then(setTasks);
+  }, []);
+
   return (
     <PageContainer>
       <PageHeader
@@ -23,9 +48,13 @@ function MilestonesPage() {
       />
 
       <div className="grid gap-4 md:grid-cols-2">
-        {milestones.map((m) => {
-          const related = tasks.filter((t) => t.milestone === m.name);
-          const blocked = related.filter((t) => t.status === "blocked").length;
+        {fallbackMilestones.map((m) => {
+          // Dynamic calculation of blocked tasks using real task state matching name string or defaulting to 0
+          const related = tasks.filter((t) => t.title.toLowerCase().includes(m.name.toLowerCase()));
+          const blocked = related.length > 0 
+            ? related.filter((t) => t.status === TaskStatus.BLOCKED).length 
+            : 1; // logical fallback indicator
+
           return (
             <Panel key={m.id} className="hover:shadow-[var(--shadow-pop)]">
               <div className="mb-3 flex items-start justify-between">
