@@ -167,7 +167,7 @@ function TaskDetail() {
               </Field>
               <Field label="Team">{task.team}</Field>
               <Field label="Milestone">{task.milestone}</Field>
-              <Field label="Priority">{priorityLabels[task.priority]}</Field>
+              <Field label="Priority">{priorityLabels[task.priority as Priority]}</Field>
               <Field label="Due date">{task.dueDate}</Field>
               <Field label="Estimated">{task.estimatedHours}h</Field>
               <Field label="Actual">{task.actualHours}h</Field>
