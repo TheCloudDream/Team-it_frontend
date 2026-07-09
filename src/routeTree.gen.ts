@@ -9,38 +9,301 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as AcceptInvitationRouteImport } from './routes/accept-invitation'
+import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppWorkloadRouteImport } from './routes/_app.workload'
+import { Route as AppUsersRouteImport } from './routes/_app.users'
+import { Route as AppTimeRouteImport } from './routes/_app.time'
+import { Route as AppTeamsRouteImport } from './routes/_app.teams'
+import { Route as AppSettingsRouteImport } from './routes/_app.settings'
+import { Route as AppReviewRouteImport } from './routes/_app.review'
+import { Route as AppNotificationsRouteImport } from './routes/_app.notifications'
+import { Route as AppMilestonesRouteImport } from './routes/_app.milestones'
+import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
+import { Route as AppBoardRouteImport } from './routes/_app.board'
+import { Route as AppBlockedRouteImport } from './routes/_app.blocked'
+import { Route as AppAnalyticsRouteImport } from './routes/_app.analytics'
+import { Route as AppTasksIndexRouteImport } from './routes/_app.tasks.index'
+import { Route as AppTasksIdRouteImport } from './routes/_app.tasks.$id'
+import { Route as AppSettingsSecurityRouteImport } from './routes/_app.settings.security'
+import { Route as AppSettingsProfileRouteImport } from './routes/_app.settings.profile'
+import { Route as AppSettingsPreferencesRouteImport } from './routes/_app.settings.preferences'
 
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AcceptInvitationRoute = AcceptInvitationRouteImport.update({
+  id: '/accept-invitation',
+  path: '/accept-invitation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppRoute = AppRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppWorkloadRoute = AppWorkloadRouteImport.update({
+  id: '/workload',
+  path: '/workload',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppUsersRoute = AppUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppTimeRoute = AppTimeRouteImport.update({
+  id: '/time',
+  path: '/time',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppTeamsRoute = AppTeamsRouteImport.update({
+  id: '/teams',
+  path: '/teams',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSettingsRoute = AppSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppReviewRoute = AppReviewRouteImport.update({
+  id: '/review',
+  path: '/review',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppNotificationsRoute = AppNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMilestonesRoute = AppMilestonesRouteImport.update({
+  id: '/milestones',
+  path: '/milestones',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDashboardRoute = AppDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppBoardRoute = AppBoardRouteImport.update({
+  id: '/board',
+  path: '/board',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppBlockedRoute = AppBlockedRouteImport.update({
+  id: '/blocked',
+  path: '/blocked',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAnalyticsRoute = AppAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppTasksIndexRoute = AppTasksIndexRouteImport.update({
+  id: '/tasks/',
+  path: '/tasks/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppTasksIdRoute = AppTasksIdRouteImport.update({
+  id: '/tasks/$id',
+  path: '/tasks/$id',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSettingsSecurityRoute = AppSettingsSecurityRouteImport.update({
+  id: '/security',
+  path: '/security',
+  getParentRoute: () => AppSettingsRoute,
+} as any)
+const AppSettingsProfileRoute = AppSettingsProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AppSettingsRoute,
+} as any)
+const AppSettingsPreferencesRoute = AppSettingsPreferencesRouteImport.update({
+  id: '/preferences',
+  path: '/preferences',
+  getParentRoute: () => AppSettingsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/accept-invitation': typeof AcceptInvitationRoute
+  '/login': typeof LoginRoute
+  '/analytics': typeof AppAnalyticsRoute
+  '/blocked': typeof AppBlockedRoute
+  '/board': typeof AppBoardRoute
+  '/dashboard': typeof AppDashboardRoute
+  '/milestones': typeof AppMilestonesRoute
+  '/notifications': typeof AppNotificationsRoute
+  '/review': typeof AppReviewRoute
+  '/settings': typeof AppSettingsRouteWithChildren
+  '/teams': typeof AppTeamsRoute
+  '/time': typeof AppTimeRoute
+  '/users': typeof AppUsersRoute
+  '/workload': typeof AppWorkloadRoute
+  '/settings/preferences': typeof AppSettingsPreferencesRoute
+  '/settings/profile': typeof AppSettingsProfileRoute
+  '/settings/security': typeof AppSettingsSecurityRoute
+  '/tasks/$id': typeof AppTasksIdRoute
+  '/tasks/': typeof AppTasksIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/accept-invitation': typeof AcceptInvitationRoute
+  '/login': typeof LoginRoute
+  '/analytics': typeof AppAnalyticsRoute
+  '/blocked': typeof AppBlockedRoute
+  '/board': typeof AppBoardRoute
+  '/dashboard': typeof AppDashboardRoute
+  '/milestones': typeof AppMilestonesRoute
+  '/notifications': typeof AppNotificationsRoute
+  '/review': typeof AppReviewRoute
+  '/settings': typeof AppSettingsRouteWithChildren
+  '/teams': typeof AppTeamsRoute
+  '/time': typeof AppTimeRoute
+  '/users': typeof AppUsersRoute
+  '/workload': typeof AppWorkloadRoute
+  '/settings/preferences': typeof AppSettingsPreferencesRoute
+  '/settings/profile': typeof AppSettingsProfileRoute
+  '/settings/security': typeof AppSettingsSecurityRoute
+  '/tasks/$id': typeof AppTasksIdRoute
+  '/tasks': typeof AppTasksIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_app': typeof AppRouteWithChildren
+  '/accept-invitation': typeof AcceptInvitationRoute
+  '/login': typeof LoginRoute
+  '/_app/analytics': typeof AppAnalyticsRoute
+  '/_app/blocked': typeof AppBlockedRoute
+  '/_app/board': typeof AppBoardRoute
+  '/_app/dashboard': typeof AppDashboardRoute
+  '/_app/milestones': typeof AppMilestonesRoute
+  '/_app/notifications': typeof AppNotificationsRoute
+  '/_app/review': typeof AppReviewRoute
+  '/_app/settings': typeof AppSettingsRouteWithChildren
+  '/_app/teams': typeof AppTeamsRoute
+  '/_app/time': typeof AppTimeRoute
+  '/_app/users': typeof AppUsersRoute
+  '/_app/workload': typeof AppWorkloadRoute
+  '/_app/settings/preferences': typeof AppSettingsPreferencesRoute
+  '/_app/settings/profile': typeof AppSettingsProfileRoute
+  '/_app/settings/security': typeof AppSettingsSecurityRoute
+  '/_app/tasks/$id': typeof AppTasksIdRoute
+  '/_app/tasks/': typeof AppTasksIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/accept-invitation'
+    | '/login'
+    | '/analytics'
+    | '/blocked'
+    | '/board'
+    | '/dashboard'
+    | '/milestones'
+    | '/notifications'
+    | '/review'
+    | '/settings'
+    | '/teams'
+    | '/time'
+    | '/users'
+    | '/workload'
+    | '/settings/preferences'
+    | '/settings/profile'
+    | '/settings/security'
+    | '/tasks/$id'
+    | '/tasks/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/accept-invitation'
+    | '/login'
+    | '/analytics'
+    | '/blocked'
+    | '/board'
+    | '/dashboard'
+    | '/milestones'
+    | '/notifications'
+    | '/review'
+    | '/settings'
+    | '/teams'
+    | '/time'
+    | '/users'
+    | '/workload'
+    | '/settings/preferences'
+    | '/settings/profile'
+    | '/settings/security'
+    | '/tasks/$id'
+    | '/tasks'
+  id:
+    | '__root__'
+    | '/'
+    | '/_app'
+    | '/accept-invitation'
+    | '/login'
+    | '/_app/analytics'
+    | '/_app/blocked'
+    | '/_app/board'
+    | '/_app/dashboard'
+    | '/_app/milestones'
+    | '/_app/notifications'
+    | '/_app/review'
+    | '/_app/settings'
+    | '/_app/teams'
+    | '/_app/time'
+    | '/_app/users'
+    | '/_app/workload'
+    | '/_app/settings/preferences'
+    | '/_app/settings/profile'
+    | '/_app/settings/security'
+    | '/_app/tasks/$id'
+    | '/_app/tasks/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AppRoute: typeof AppRouteWithChildren
+  AcceptInvitationRoute: typeof AcceptInvitationRoute
+  LoginRoute: typeof LoginRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/accept-invitation': {
+      id: '/accept-invitation'
+      path: '/accept-invitation'
+      fullPath: '/accept-invitation'
+      preLoaderRoute: typeof AcceptInvitationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +311,185 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app/workload': {
+      id: '/_app/workload'
+      path: '/workload'
+      fullPath: '/workload'
+      preLoaderRoute: typeof AppWorkloadRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/users': {
+      id: '/_app/users'
+      path: '/users'
+      fullPath: '/users'
+      preLoaderRoute: typeof AppUsersRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/time': {
+      id: '/_app/time'
+      path: '/time'
+      fullPath: '/time'
+      preLoaderRoute: typeof AppTimeRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/teams': {
+      id: '/_app/teams'
+      path: '/teams'
+      fullPath: '/teams'
+      preLoaderRoute: typeof AppTeamsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/settings': {
+      id: '/_app/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AppSettingsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/review': {
+      id: '/_app/review'
+      path: '/review'
+      fullPath: '/review'
+      preLoaderRoute: typeof AppReviewRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/notifications': {
+      id: '/_app/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof AppNotificationsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/milestones': {
+      id: '/_app/milestones'
+      path: '/milestones'
+      fullPath: '/milestones'
+      preLoaderRoute: typeof AppMilestonesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/dashboard': {
+      id: '/_app/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AppDashboardRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/board': {
+      id: '/_app/board'
+      path: '/board'
+      fullPath: '/board'
+      preLoaderRoute: typeof AppBoardRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/blocked': {
+      id: '/_app/blocked'
+      path: '/blocked'
+      fullPath: '/blocked'
+      preLoaderRoute: typeof AppBlockedRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/analytics': {
+      id: '/_app/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof AppAnalyticsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/tasks/': {
+      id: '/_app/tasks/'
+      path: '/tasks'
+      fullPath: '/tasks/'
+      preLoaderRoute: typeof AppTasksIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/tasks/$id': {
+      id: '/_app/tasks/$id'
+      path: '/tasks/$id'
+      fullPath: '/tasks/$id'
+      preLoaderRoute: typeof AppTasksIdRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/settings/security': {
+      id: '/_app/settings/security'
+      path: '/security'
+      fullPath: '/settings/security'
+      preLoaderRoute: typeof AppSettingsSecurityRouteImport
+      parentRoute: typeof AppSettingsRoute
+    }
+    '/_app/settings/profile': {
+      id: '/_app/settings/profile'
+      path: '/profile'
+      fullPath: '/settings/profile'
+      preLoaderRoute: typeof AppSettingsProfileRouteImport
+      parentRoute: typeof AppSettingsRoute
+    }
+    '/_app/settings/preferences': {
+      id: '/_app/settings/preferences'
+      path: '/preferences'
+      fullPath: '/settings/preferences'
+      preLoaderRoute: typeof AppSettingsPreferencesRouteImport
+      parentRoute: typeof AppSettingsRoute
+    }
   }
 }
 
+interface AppSettingsRouteChildren {
+  AppSettingsPreferencesRoute: typeof AppSettingsPreferencesRoute
+  AppSettingsProfileRoute: typeof AppSettingsProfileRoute
+  AppSettingsSecurityRoute: typeof AppSettingsSecurityRoute
+}
+
+const AppSettingsRouteChildren: AppSettingsRouteChildren = {
+  AppSettingsPreferencesRoute: AppSettingsPreferencesRoute,
+  AppSettingsProfileRoute: AppSettingsProfileRoute,
+  AppSettingsSecurityRoute: AppSettingsSecurityRoute,
+}
+
+const AppSettingsRouteWithChildren = AppSettingsRoute._addFileChildren(
+  AppSettingsRouteChildren,
+)
+
+interface AppRouteChildren {
+  AppAnalyticsRoute: typeof AppAnalyticsRoute
+  AppBlockedRoute: typeof AppBlockedRoute
+  AppBoardRoute: typeof AppBoardRoute
+  AppDashboardRoute: typeof AppDashboardRoute
+  AppMilestonesRoute: typeof AppMilestonesRoute
+  AppNotificationsRoute: typeof AppNotificationsRoute
+  AppReviewRoute: typeof AppReviewRoute
+  AppSettingsRoute: typeof AppSettingsRouteWithChildren
+  AppTeamsRoute: typeof AppTeamsRoute
+  AppTimeRoute: typeof AppTimeRoute
+  AppUsersRoute: typeof AppUsersRoute
+  AppWorkloadRoute: typeof AppWorkloadRoute
+  AppTasksIdRoute: typeof AppTasksIdRoute
+  AppTasksIndexRoute: typeof AppTasksIndexRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppAnalyticsRoute: AppAnalyticsRoute,
+  AppBlockedRoute: AppBlockedRoute,
+  AppBoardRoute: AppBoardRoute,
+  AppDashboardRoute: AppDashboardRoute,
+  AppMilestonesRoute: AppMilestonesRoute,
+  AppNotificationsRoute: AppNotificationsRoute,
+  AppReviewRoute: AppReviewRoute,
+  AppSettingsRoute: AppSettingsRouteWithChildren,
+  AppTeamsRoute: AppTeamsRoute,
+  AppTimeRoute: AppTimeRoute,
+  AppUsersRoute: AppUsersRoute,
+  AppWorkloadRoute: AppWorkloadRoute,
+  AppTasksIdRoute: AppTasksIdRoute,
+  AppTasksIndexRoute: AppTasksIndexRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppRoute: AppRouteWithChildren,
+  AcceptInvitationRoute: AcceptInvitationRoute,
+  LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
