@@ -1,12 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowUpDown, Filter, Plus, Search } from "lucide-react";
 import { PageContainer, PageHeader } from "@/components/team-it/Page";
 import { PriorityBadge, StatusBadge } from "@/components/team-it/StatusBadge";
 import { UserAvatar } from "@/components/team-it/Avatar";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { tasks, users } from "@/lib/team-it/data";
+import { getTasks } from "@/services/task.service";
+import { getUsers } from "@/services/user.service";
+import type { Task } from "@/types/task";
+import type { User } from "@/types/user";
 
 export const Route = createFileRoute("/_app/tasks/")({
   head: () => ({
@@ -17,14 +20,22 @@ export const Route = createFileRoute("/_app/tasks/")({
 
 function TasksPage() {
   const [q, setQ] = useState("");
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
+
+  useEffect(() => {
+    getTasks().then(setTasks);
+    getUsers().then(setUsers);
+  }, []);
+
   const filtered = useMemo(
     () =>
       tasks.filter(
         (t) =>
           t.title.toLowerCase().includes(q.toLowerCase()) ||
-          t.code.toLowerCase().includes(q.toLowerCase()),
+          t.id.toLowerCase().includes(q.toLowerCase()),
       ),
-    [q],
+    [q, tasks],
   );
 
   return (
@@ -77,7 +88,7 @@ function TasksPage() {
           </thead>
           <tbody className="divide-y divide-border">
             {filtered.map((t) => {
-              const u = users.find((x) => x.id === t.assigneeId)!;
+              const u = users.find((x) => x.id === t.assigneeId);
               return (
                 <tr key={t.id} className="transition-colors hover:bg-muted/30">
                   <td className="py-3 pl-4">
@@ -86,7 +97,7 @@ function TasksPage() {
                   <td className="py-3">
                     <div className="flex items-center gap-3">
                       <span className="rounded bg-muted px-1.5 py-0.5 font-mono text-[10px] font-bold text-muted-foreground">
-                        {t.code}
+                        TASK-{t.id}
                       </span>
                       <Link
                         to="/tasks/$id"
@@ -104,12 +115,18 @@ function TasksPage() {
                     <PriorityBadge priority={t.priority} />
                   </td>
                   <td className="py-3">
-                    <div className="flex items-center gap-2">
-                      <UserAvatar user={u} size="xs" />
-                      <span className="text-xs">{u.name}</span>
-                    </div>
+                    {u ? (
+                      <div className="flex items-center gap-2">
+                        <UserAvatar user={u} size="xs" />
+                        <span className="text-xs">
+                          {u.firstName} {u.lastName}
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">Unassigned</span>
+                    )}
                   </td>
-                  <td className="py-3 text-xs text-muted-foreground">{t.milestone}</td>
+                  <td className="py-3 text-xs text-muted-foreground">—</td>
                   <td className="py-3 pr-4 text-right text-xs text-muted-foreground">{t.dueDate}</td>
                 </tr>
               );

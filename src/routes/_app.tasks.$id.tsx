@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft, Paperclip, Play, Send, ShieldAlert } from "lucide-react";
 import { PageContainer } from "@/components/team-it/Page";
 import { PriorityBadge, StatusBadge } from "@/components/team-it/StatusBadge";
@@ -16,7 +16,9 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { tasks, users, statusOrder, statusLabels, priorityLabels, type TaskStatus } from "@/lib/team-it/data";
+import { tasks, users } from "@/lib/team-it/data";
+import { statusOrder, statusLabels, priorityLabels } from "@/constants/task";
+import type { TaskStatus } from "@/types/task";
 
 export const Route = createFileRoute("/_app/tasks/$id")({
   loader: ({ params }) => {
@@ -25,7 +27,7 @@ export const Route = createFileRoute("/_app/tasks/$id")({
     return { task };
   },
   head: ({ loaderData }) => ({
-    meta: [{ title: loaderData ? `${loaderData.task.code} · ${loaderData.task.title}` : "Task — Team-it" }],
+    meta: [{ title: loaderData ? `TASK-${loaderData.task.id} · ${loaderData.task.title}` : "Task — Team-it" }],
   }),
   component: TaskDetail,
   notFoundComponent: () => (
@@ -44,13 +46,15 @@ export const Route = createFileRoute("/_app/tasks/$id")({
 function TaskDetail() {
   const { task } = Route.useLoaderData();
   const assignee = users.find((u) => u.id === task.assigneeId)!;
-  const [status, setStatus] = useState<TaskStatus>(task.status);
+  const [status, setStatus] = useState<TaskStatus>(task.status as TaskStatus);
   const [comment, setComment] = useState("");
 
+  const assigneeName = assignee ? `${assignee.firstName} ${assignee.lastName}` : "Unassigned";
+
   const timeline = [
-    { id: 1, actor: assignee.name, action: `moved status to ${statusLabels[status]}`, time: "1h ago" },
+    { id: 1, actor: assigneeName, action: `moved status to ${statusLabels[status]}`, time: "1h ago" },
     { id: 2, actor: "Marcus Kane", action: "commented", time: "3h ago", comment: "Please make sure the migration is reversible." },
-    { id: 3, actor: assignee.name, action: `logged 2h`, time: "Yesterday" },
+    { id: 3, actor: assigneeName, action: `logged 2h`, time: "Yesterday" },
     { id: 4, actor: "Marcus Kane", action: "assigned this task", time: "3 days ago" },
   ];
 
@@ -61,7 +65,7 @@ function TaskDetail() {
           <ArrowLeft className="size-3.5" /> Tasks
         </Link>
         <span>/</span>
-        <span className="font-mono text-xs">{task.code}</span>
+        <span className="font-mono text-xs">TASK-{task.id}</span>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
@@ -72,7 +76,7 @@ function TaskDetail() {
               <StatusBadge status={status} />
               <PriorityBadge priority={task.priority} />
               <span className="rounded-md bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
-                {task.milestone}
+                No Milestone
               </span>
             </div>
           </div>
@@ -160,13 +164,17 @@ function TaskDetail() {
                 </select>
               </Field>
               <Field label="Assignee">
-                <div className="flex items-center gap-2">
-                  <UserAvatar user={assignee} size="xs" />
-                  <span>{assignee.name}</span>
-                </div>
+                {assignee ? (
+                  <div className="flex items-center gap-2">
+                    <UserAvatar user={assignee} size="xs" />
+                    <span>{assigneeName}</span>
+                  </div>
+                ) : (
+                  <span className="text-muted-foreground">Unassigned</span>
+                )}
               </Field>
-              <Field label="Team">{task.team}</Field>
-              <Field label="Milestone">{task.milestone}</Field>
+              <Field label="Team">{task.teamId || "—"}</Field>
+              <Field label="Milestone">No Milestone</Field>
               <Field label="Priority">{(priorityLabels as Record<string, string>)[task.priority]}</Field>
               <Field label="Due date">{task.dueDate}</Field>
               <Field label="Estimated">{task.estimatedHours}h</Field>

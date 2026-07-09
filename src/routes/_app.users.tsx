@@ -1,10 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MoreHorizontal, Plus, Search } from "lucide-react";
 import { PageContainer, PageHeader } from "@/components/team-it/Page";
 import { UserAvatar } from "@/components/team-it/Avatar";
 import { Button } from "@/components/ui/button";
-import { users } from "@/lib/team-it/data";
+import { getUsers } from "@/services/user.service";
 import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
@@ -12,6 +12,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
+import type { User } from "@/types/user";
 
 export const Route = createFileRoute("/_app/users")({
   head: () => ({ meta: [{ title: "User directory — Team-it" }] }),
@@ -21,13 +23,18 @@ export const Route = createFileRoute("/_app/users")({
 const statusClass = {
   active: "bg-success/10 text-success",
   inactive: "bg-muted text-muted-foreground",
-  invited: "bg-warning/15 text-warning-foreground dark:text-warning",
 };
 
 function UsersPage() {
   const [q, setQ] = useState("");
+  const [users, setUsers] = useState<User[]>([]);
+
+  useEffect(() => {
+    getUsers().then(setUsers);
+  }, []);
+
   const filtered = users.filter(
-    (u) => u.name.toLowerCase().includes(q.toLowerCase()) || u.email.toLowerCase().includes(q.toLowerCase()),
+    (u) => `${u.firstName} ${u.lastName}`.toLowerCase().includes(q.toLowerCase()) || u.email.toLowerCase().includes(q.toLowerCase()),
   );
 
   return (
@@ -75,22 +82,22 @@ function UsersPage() {
                   <div className="flex items-center gap-3">
                     <UserAvatar user={u} size="md" />
                     <div className="min-w-0">
-                      <div className="font-medium">{u.name}</div>
+                      <div className="font-medium">{u.firstName} {u.lastName}</div>
                       <div className="truncate text-xs text-muted-foreground">{u.email}</div>
                     </div>
                   </div>
                 </td>
-                <td className="py-3">{u.team}</td>
+                <td className="py-3">{u.teamId ?? "Unassigned"}</td>
                 <td className="py-3 capitalize">{u.role}</td>
                 <td className="py-3">
                   <span
                     className={cn(
                       "inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
-                      statusClass[u.status],
+                      statusClass[u.active ? "active" : "inactive"],
                     )}
                   >
                     <span className="size-1.5 rounded-full bg-current" />
-                    {u.status}
+                    {u.active ? "active" : "inactive"}
                   </span>
                 </td>
                 <td className="py-3 pr-5 text-right">

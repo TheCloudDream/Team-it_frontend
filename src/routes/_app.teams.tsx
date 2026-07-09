@@ -1,8 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { Archive, Edit3, MoreHorizontal, Plus, Users2 } from "lucide-react";
 import { PageContainer, PageHeader } from "@/components/team-it/Page";
 import { Button } from "@/components/ui/button";
-import { teams, users } from "@/lib/team-it/data";
+import { getTeams } from "@/services/team.service";
+import { getUsers } from "@/services/user.service";
+import type { Team } from "@/types/team";
+import type { User } from "@/types/user";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,6 +21,14 @@ export const Route = createFileRoute("/_app/teams")({
 });
 
 function TeamsPage() {
+  const [teams, setTeams] = useState<Team[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
+
+  useEffect(() => {
+    getTeams().then(setTeams);
+    getUsers().then(setUsers);
+  }, []);
+
   return (
     <PageContainer>
       <PageHeader
@@ -31,7 +43,7 @@ function TeamsPage() {
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {teams.map((t) => {
-          const teamUsers = users.filter((u) => u.team === t.name);
+          const teamUsers = users.filter((u) => u.teamId === t.id);
           return (
             <div
               key={t.id}
@@ -39,10 +51,7 @@ function TeamsPage() {
             >
               <div className="mb-4 flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                  <div
-                    className="grid size-10 place-items-center rounded-xl text-white"
-                    style={{ background: t.color }}
-                  >
+                  <div className="grid size-10 place-items-center rounded-xl bg-primary text-white">
                     <Users2 className="size-5" />
                   </div>
                   <div>
@@ -73,12 +82,20 @@ function TeamsPage() {
                   <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Members</div>
                 </div>
                 <div>
-                  <div className="text-lg font-semibold">{t.managerCount}</div>
-                  <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Managers</div>
+                  <div className="text-lg font-semibold">
+                    {users.filter((u) => u.role === "MANAGER" && u.teamId === t.id).length}
+                  </div>
+                  <div className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                    Managers
+                  </div>
                 </div>
                 <div>
-                  <div className="text-lg font-semibold text-primary">{t.active}</div>
-                  <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Active tasks</div>
+                  <div className="text-lg font-semibold text-primary">
+                    {teamUsers.length}
+                  </div>
+                  <div className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                    Assigned
+                  </div>
                 </div>
               </div>
 
