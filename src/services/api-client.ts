@@ -13,9 +13,9 @@ export const api = axios.create({
 // Attach the current access token to every outgoing request.
 api.interceptors.request.use((config) => {
   const token = getAccessToken();
-  if (token) {
-    config.headers = config.headers ?? {};
-    config.headers.Authorization = `Bearer ${token}`;
+  if (token && config.headers) {
+    // Safely apply the Authorization header without replacing the headers object entirely
+    config.headers.set("Authorization", `Bearer ${token}`);
   }
   return config;
 });
@@ -31,7 +31,8 @@ async function refreshAccessToken(): Promise<string | null> {
     refreshInFlight = api
       .post("/auth/refresh")
       .then((res) => {
-        const token = res.data.accessToken as string;
+        // MATCH WITH BACKEND: Read 'access_token' instead of 'accessToken'
+        const token = res.data.access_token as string;
         setAccessToken(token);
         return token;
       })
@@ -50,11 +51,11 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const original = error.config;
-    if (error.response?.status === 401 && !original._retry) {
+    if (error.response?.status === 401 && original && !original._retry) {
       original._retry = true;
       const token = await refreshAccessToken();
-      if (token) {
-        original.headers.Authorization = `Bearer ${token}`;
+      if (token && original.headers) {
+        original.headers.set("Authorization", `Bearer ${token}`);
         return api(original);
       }
     }

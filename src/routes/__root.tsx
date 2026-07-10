@@ -13,6 +13,19 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AppProvider } from "../lib/team-it/app-context";
 
+// Define a type layout for what our authentication context guarantees to downstream routes
+interface AuthRouteContext {
+  isAuthenticated: boolean;
+  user: {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    role: string;
+  } | null;
+  isLoading: boolean;
+}
+
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -73,7 +86,11 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   );
 }
 
-export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+// Updated context signature to inject the required authentication structure
+export const Route = createRootRouteWithContext<{
+  queryClient: QueryClient;
+  auth: AuthRouteContext;
+}>()({
   head: () => ({
     meta: [
       { charSet: "utf-8" },
